@@ -1,0 +1,37 @@
+<%- include('./partials/header') %>
+    <div class="w-full h-screen flex items-start px-20 py-20">
+        <div class="w-[25%] flex h-screen flex-col items-start">
+            <div class="flex flex-col">
+                <a class="block w-fit mb-2" href="#">All Products</a>
+                <a class="block w-fit mb-2" href="#">Create new product</a>
+            </div>
+        </div>
+        <div class="w-[75%] flex flex-col gap-5 h-screen">
+            <a class="text-red-500 mb-3" href="#">Delete all</a>
+            <div class="flex items-start gap-5 flex-wrap">
+                <% for (let i=0; i < products.length; i++) { %>
+                    <!--loop for the creation of innumemerabke products the admin want to create-->
+                    <div class="w-60 bg-red-500 mb-5">
+                        <div class="w-full h-52 flex items-center justify-center">
+                            <img class="h-[12rem]"
+                                src="data:image/jpeg;base64,<%= products[i].image.toString('base64') %>"
+                                alt="Product Image">
+                        </div>
+                        <div class="flex justify-between items-center px-4 py-4">
+                            <div>
+                                <h3>
+                                    <%= products[i].name %> <!--Datails and all the related thing of the product on the basisi of Schema defined all these daa  are coming from index.js and creation take place in the db-->
+                                </h3>
+                                <h4>₹ <%= products[i].price %>
+                                </h4>
+                            </div>
+                            <a class="w-7 h-7 flex items-center justify-center rounded-full bg-white" href="#">
+                                <i class="ri-add-line"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <% } %>
+            </div>
+        </div>
+    </div>
+    <%- include('./partials/footer') %>

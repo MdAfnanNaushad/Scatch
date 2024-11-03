@@ -6,7 +6,7 @@ const ownerSchema = mongoose.Schema({
     email:String,
     password:String,
     products:{
-        type:Array,
+        type:mongoose.Schema.Types.ObjectId,
         default:[]
     },
     contact:Number,

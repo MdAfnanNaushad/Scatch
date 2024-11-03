@@ -1,0 +1,47 @@
+<%- include('./partials/header') %>
+    <% if (error && error.length> 0) { %> <!--this is the main page route-->
+        <div class="absolute top-5 left-1/2 -translate-x-1/2 -translate-y-1/2 p-3 rounded-md bg-red-500">
+            <span class="inline-block mt-1 mb-1 text-white">
+                <%= error %>
+            </span>
+        </div>
+        <% } %>
+        <!--if any disperancy happens in the main route then error will be shown-->
+            <div class="w-full h-screen flex px-20 bg-red-950">
+                <div class="w-1/2 flex items-center justify-center h-screen">
+                    <div class="w-full px-32">
+                        <h3 class="text-4xl text-white">Welcome to <span
+                                class="text-amber-400 font-semibold ">Scatch</span></h3>
+                        <h4 class="text-2xl mb-5 text-white">Create your Account</h4>
+                        <form autocomplete="off" action="/users/register" method="post"> <!--post route dat s coming from userroutee ans AuthController-->
+                            <input
+                                class="bg-amber-500 block w-full px-3 py-2 border-[1px] rounded-md mb-3 border-zinc-900 placeholder-black"
+                                type="text" placeholder="Full Name" name="fullname">
+                            <input
+                                class="bg-amber-500 block w-full px-3 py-2 border-[1px] rounded-md mb-3 border-zinc-900 placeholder-black"
+                                type="email" placeholder="Email" name="email">
+                            <input
+                                class="bg-amber-500 block w-full px-3 py-2 border-[1px] rounded-md mb-3 border-zinc-900 placeholder-black"
+                                type="password" placeholder="Password" name="password">
+                            <input class="px-5 rounded-full py-3 mt-2 bg-amber-500 text-white hover:bg-red-800" type="submit"
+                                value="Create My Account">
+                        </form>
+                    </div>
+                </div>
+                <div class="w-1/2 flex items-center justify-center h-3/2 bg-amber-500  mb-[225px] mt-[225px] rounded-lg border-white ">
+                    <div class="w-full px-32">
+                        <h4 class="text-2xl capitalize mb-5 text-white  ">login to your Account</h4>
+                        <form autocomplete="off" action="/users/login" method="post"> <!--post route dat s coming from userroutee ans AuthController-->
+                            <input
+                                class="block bg-red-950 w-full px-3 py-2 border-[1px] rounded-md mb-3 border-zinc-900 placeholder-zinc-600 text-white"
+                                type="email" placeholder="Email" name="email">
+                            <input
+                                class="block bg-red-950 w-full px-3 py-2 border-[1px] rounded-md mb-3 border-zinc-900 placeholder-zinc-600 text-white"
+                                type="password" placeholder="Password" name="password">
+                            <input class="px-5 block rounded-full py-3 mt-2 bg-red-950 text-white hover:bg-amber-400" type="submit"
+                                value="Login">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <%- include('./partials/footer') %>
