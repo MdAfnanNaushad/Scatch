@@ -9,7 +9,7 @@ app.set("view engine", "ejs")
 app.use(flash());
 router.get("/", function (req, res) {
     let error = req.flash("error");
-    res.render("index", { error, loggedin: false });
+    res.render("index", { error, loggedin: false }); //if the user is ot logged in then error will bw shown
 });
 router.get("/shop", isLoggedIn, async function (req, res) {
     try {
@@ -24,14 +24,14 @@ router.get("/shop", isLoggedIn, async function (req, res) {
 });
 
 
-router.get("/cart", isLoggedIn, async function (req, res) {
+router.get("/cart", isLoggedIn, async function (req, res) { //
     let user = await userModel.findOne({ email: req.user.email }).populate("cart");
-    if(user.cart){
-        bill = user.cart.reduce((total,item)=>{
-            return total+item.price-(item.discount);
-        },0)
+    if (user.cart) {
+        bill = user.cart.reduce((total, item) => {
+            return total + item.price - (item.discount);
+        }, 0)
     }
-    res.render("cart", { user,bill });
+    res.render("cart", { user, bill });
 });
 
 router.get("/addtocart/:id", isLoggedIn, async function (req, res) {
@@ -41,6 +41,19 @@ router.get("/addtocart/:id", isLoggedIn, async function (req, res) {
     req.flash("success", "Added to cart");
     res.redirect('/shop');
 });
+router.get("/account", isLoggedIn, async function (req, res) {
+    try {
+        let user = await userModel.findOne({ email: req.user.email }); // Find single user based on logged-in email
+        if (user) {
+            return res.render("account", { users: user }); // Pass the user object to the view
+        }
+        res.status(404).send("User not found"); // Handle case if user is not found
+    } catch (error) {
+        console.error(error);
+        res.send("Something went wrong");
+    }
+});
+
 router.get("/logout", isLoggedIn, function (req, res) {
     res.render("shop");
 });

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <div class="w-full h-full bg-red-950 h-screen p-10 text-white font-bold">
+        <a class="text-blue-500 p-3 text-xl" href="/shop">
+            << Back </a>
+                <h1 class="text-3xl  mt-10 text-amber-500">Profile</h1>
+
+                <div class="users flex flex-wrap gap-3 mt-20">
+                    <% if (users) { %>
+                        <div class="users w-72 p-4 bg-zinc-800 rounded-lg">
+                            <div class="w-full h-52 bg-zinc-700 rounded-lg overflow-hidden">
+                                <img class="w-full h-full object-cover"
+                                    src="/profilepic/uploads/<%= users.profilepic %>" alt="Profile Picture">
+
+
+                            </div>
+                            <h3 class="text-xl tracking-tighter mt-3">
+                                <%= users.fullname %>
+                            </h3>
+                            <h5 class="mail text-zinc-500">
+                                <%= users.email %>
+                            </h5>
+                            <form action="/users/upload-profile-pic" method="POST" enctype="multipart/form-data">
+                                <input type="file" name="profilepic" accept="image/*" required>
+                                <button type="submit" class="btn btn-primary">Upload Profile Picture</button>
+                            </form>
+                            
+                        </div>
+
+                        <% } else { %>
+                            <h1 class="text-zinc-500">No user yet!</h1>
+                            <% } %>
+                </div>
+    </div>
+</body>
+
+</html>

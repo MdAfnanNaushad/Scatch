@@ -11,6 +11,10 @@ const userSchema = mongoose.Schema({
     },
     email:String,
     password:String,
+    profilepic:{
+        type:String,
+        default:"profilepic2.png" 
+    },
     cart:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"product",
