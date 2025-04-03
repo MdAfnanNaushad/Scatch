@@ -24,14 +24,23 @@ router.get("/shop", isLoggedIn, async function (req, res) {
 });
 
 
-router.get("/cart", isLoggedIn, async function (req, res) { //
-    let user = await userModel.findOne({ email: req.user.email }).populate("cart");
-    if (user.cart) {
-        bill = user.cart.reduce((total, item) => {
-            return total + item.price - (item.discount);
-        }, 0)
+router.get("/cart", isLoggedIn, async function (req, res) {
+    try {
+        let user = await userModel.findOne({ email: req.user.email }).populate("cart");
+        let bill = 0;
+        if (user.cart && user.cart.length > 0) {
+            bill = user.cart.reduce((total, item) => {
+                const price = item.price || 0;
+                const discount = item.discount || 0;
+                return total + price - discount;
+            }, 0);
+        }
+        res.render("cart", { user, bill });
+    } catch (error) {
+        console.error(error);
+        req.flash("error", "Failed to load cart");
+        res.redirect("/");
     }
-    res.render("cart", { user, bill });
 });
 
 router.get("/addtocart/:id", isLoggedIn, async function (req, res) {
