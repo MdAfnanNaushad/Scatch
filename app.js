@@ -1,48 +1,61 @@
 const express = require('express');
 const app = express();
 
-const db = require("./config/mongoose-connection"); //to use mongoose cconnection from config folde
+const db = require("./config/mongoose-connection"); // MongoDB connection
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const flash = require("connect-flash"); // Flash messages
+const expressSession = require("express-session"); // Session management
+require("dotenv").config(); // Load environment variables
 
-const controllers = require('./controllers/AuthController') //for controllers maimly to give the access to the decided individuals and not all
-const isLoggedIn = require("./middlewares/isLoggedIn")// requiring middleware for safer login and loggedout
+// Routers
+const ownersRouter = require("./routes/ownersRouter");
+const productsRouter = require("./routes/productsRouter");
+const usersRouter = require("./routes/usersRouter");
+const router = require("./routes/index");
 
-const flash = require("connect-flash") //to use flah messages
-const ownersRouter = require("./routes/ownersRouter"); //to user owners router
-const productsRouter = require("./routes/productsRouter"); //to use producs router
-const usersRouter = require("./routes/usersRouter"); //to use user router
-const router = require("./routes/index"); //using index.js folder nd to use all its data in this feild
-
-
-const expressSession = require("express-session"); //for creating session of the logged in use and not of the user who is not logged in or dont have an account
-
-
-
-require("dotenv").config(); //meths to use .env file in which all the passwords and security key
-app.set("view engine", "ejs"); // Set the view engine first
-
-app.use(express.json()); //converting the data into json format
-app.use(express.urlencoded({ extended: true }));
-
-app.use(cookieParser()); //method to use cookie-pareser (the random string attachment)
-
-
-app.use(express.static(path.join(__dirname, "public"))); //ensuring to resd all the file from the public directory
+// Middleware
+app.set("view engine", "ejs"); // Set EJS as the view engine
+app.use(express.json()); // Parse JSON request bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
+app.use(cookieParser()); // Parse cookies
+app.use(express.static(path.join(__dirname, "public"))); // Serve static files
 app.use('/profilepic/uploads', express.static(path.join(__dirname, 'public', 'profilepic', 'uploads')));
 
-app.use(expressSession({ //what to include in express session
-    secret: process.env.EXPRESS_SESSION_SECRET,
-    resave: false, //dont save everytime
-    saveUninitialized: false, //dont save the seession of thjose who are jsut comingbut not te user
+// Session configuration
+app.use(expressSession({
+    secret: process.env.EXPRESS_SESSION_SECRET, // Use environment variable or fallback
+    resave: false,
+    saveUninitialized: false,
 }));
 
-app.use(flash()); //method of using flash message
+// Flash messages
+app.use(flash());
+app.use((req, res, next) => {
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    next();
+});
 
-app.use("/", router); //the main router
-app.use("/owners", ownersRouter);  //the owners outer any thing related to owner will have to go from this router for example /owners/admin
-app.use("/users", usersRouter); //the user router same concepts s that of above
-app.use("/products", productsRouter);  //""
-app.listen(3000, () => { //the listening port roter or the port or link wherethe app is running
-    console.log("listening on port 3000");
+// Routes
+app.use("/", router); // Main router
+app.use("/owners", ownersRouter); // Owners router
+app.use("/users", usersRouter); // Users router
+app.use("/products", productsRouter); // Products router
+
+// Handle 404 errors
+app.use((req, res, next) => {
+    res.status(404).render("404", { message: "Page Not Found" });
+});
+
+// Error-handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).render("500", { message: "Internal Server Error" });
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}`);
 });

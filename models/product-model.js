@@ -1,16 +1,13 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const productSchema = mongoose.Schema({
-    image:Buffer,
-    name:String,
-    price:Number,
-    discount:{
-        type:Number,
-        default:0
-    },
-    bgcolor:String,
-    panelcolor:String,
-    textcolor:String
-})
+const productSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    price: { type: Number, required: true },
+    discount: { type: Number, default: 0 },
+    bgcolor: { type: String, default: "#ffffff" },
+    panelcolor: { type: String, default: "#ffffff" },
+    textcolor: { type: String, default: "#000000" },
+    image: { type: Buffer, required: true }, // Store the filename of the uploaded image
+});
 
-module.exports = mongoose.model("product",productSchema);
+module.exports = mongoose.model("product", productSchema);

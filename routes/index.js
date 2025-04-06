@@ -1,20 +1,19 @@
 const express = require("express");
-const app = express();
 const router = express.Router();
 const isLoggedIn = require("../middlewares/isLoggedIn");
 const productModel = require("../models/product-model");
 const userModel = require("../models/user-model");
-const flash = require('connect-flash')
-app.set("view engine", "ejs")
-app.use(flash());
+
 router.get("/", function (req, res) {
     let error = req.flash("error");
-    res.render("index", { error, loggedin: false }); //if the user is ot logged in then error will bw shown
+    let success = req.flash("success");
+    res.render("index", { error, success, loggedin: false });
 });
+
 router.get("/shop", isLoggedIn, async function (req, res) {
     try {
         let products = await productModel.find();
-        const successMessages = req.flash("success", "Welcome to Scatch");
+        const successMessages = req.flash("success");
         const success = successMessages.length ? successMessages[0] : "";
         res.render("shop", { products, success });
     } catch (error) {
@@ -23,10 +22,13 @@ router.get("/shop", isLoggedIn, async function (req, res) {
     }
 });
 
-
 router.get("/cart", isLoggedIn, async function (req, res) {
     try {
         let user = await userModel.findOne({ email: req.user.email }).populate("cart");
+        if (!user) {
+            req.flash("error", "User not found");
+            return res.redirect("/");
+        }
         let bill = 0;
         if (user.cart && user.cart.length > 0) {
             bill = user.cart.reduce((total, item) => {
@@ -44,19 +46,35 @@ router.get("/cart", isLoggedIn, async function (req, res) {
 });
 
 router.get("/addtocart/:id", isLoggedIn, async function (req, res) {
-    let user = await userModel.findOne({ email: req.user.email });
-    user.cart.push(req.params.id);
-    await user.save();
-    req.flash("success", "Added to cart");
-    res.redirect('/shop');
+    try {
+        let user = await userModel.findOne({ email: req.user.email });
+        if (!user) {
+            req.flash("error", "User not found");
+            return res.redirect("/shop");
+        }
+        let product = await productModel.findById(req.params.id);
+        if (!product) {
+            req.flash("error", "Product not found");
+            return res.redirect("/shop");
+        }
+        user.cart.push(req.params.id);
+        await user.save();
+        req.flash("success", "Added to cart");
+        res.redirect("/shop");
+    } catch (error) {
+        console.error(error);
+        req.flash("error", "Failed to add product to cart");
+        res.redirect("/shop");
+    }
 });
+
 router.get("/account", isLoggedIn, async function (req, res) {
     try {
-        let user = await userModel.findOne({ email: req.user.email }); // Find single user based on logged-in email
+        let user = await userModel.findOne({ email: req.user.email });
         if (user) {
-            return res.render("account", { users: user }); // Pass the user object to the view
+            return res.render("account", { users: user });
         }
-        res.status(404).send("User not found"); // Handle case if user is not found
+        res.status(404).send("User not found");
     } catch (error) {
         console.error(error);
         res.send("Something went wrong");
@@ -64,8 +82,14 @@ router.get("/account", isLoggedIn, async function (req, res) {
 });
 
 router.get("/logout", isLoggedIn, function (req, res) {
-    res.render("shop");
+    req.session.destroy((err) => {
+        if (err) {
+            console.error(err);
+            req.flash("error", "Failed to log out");
+            return res.redirect("/shop");
+        }
+        res.redirect("/");
+    });
 });
-
 
 module.exports = router;

@@ -4,7 +4,7 @@ const dbgr = require("debug")("development:mongoose");//This line imports the de
 mongoose.connect(`${config.get("MONGODB_URI")}/scatch`)//this is the connection String generation
     .then(function () {
         dbgr("connected"); //This block attempts to connect to the MongoDB database using the connection string obtained from the configuration settings.
-        console.log("connected");
+        console.log("connected to server");
 
 
     })

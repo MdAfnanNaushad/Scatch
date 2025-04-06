@@ -2,29 +2,29 @@ const mongoose = require('mongoose');
 
 
 const userSchema = mongoose.Schema({
-    fullname:{ 
-        type:String,
-        minLength:3,
-        trim:true,
-        required:true
+    fullname: {
+        type: String,
+        minLength: 3,
+        trim: true,
+        required: true
 
     },
-    email:String,
-    password:String,
-    profilepic:{
-        type:String,
-        default:"profilepic2.png" 
+    email: String,
+    password: String,
+    profilepic: {
+        type: String,
+        default: "profilepic2.png"
     },
-    cart:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"product",
+    cart: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "product",
     }],
-    orders:{
-        type:Array,
-        default:[]
+    orders: {
+        type: Array,
+        default: []
     },
-    contact:Number,
-    picture:String
+    contact: Number,
+    picture: String
 });
 
-module.exports = mongoose.model("user",userSchema);
+module.exports = mongoose.model("user", userSchema);
